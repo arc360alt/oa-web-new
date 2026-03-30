@@ -1,0 +1,140 @@
+---
+const features = [
+  {
+    icon: "⚡",
+    title: "Massive FPS Gains",
+    color: "accent",
+    desc: "OptiArk replaces Minecraft's default renderer with a more modern version of OpenGL on 2 versions, and Vulkan 1.2 on the Vulkanmod pack, delivering dramatically higher framerates on the same hardware. Most players see 2–5× their vanilla FPS.",
+    stats: [{ label: "Avg FPS boost vs Vanilla", value: "3×" }, { label: "Frame time reduction", value: "~60%" }],
+  },
+  {
+    icon: "🎛",
+    title: "Multiple Renderers",
+    color: "accent2",
+    desc: "Not every GPU is the same. OptiArk ships in four renderer flavors so you can pick the one that fits your hardware, Sodium for universal support, Vulkan for cutting-edge GPUs (2013+), Nividium for NVIDIA GPUs that are or is newer than the GTX 16xx, and Embeddium for Forge mod compatibility.",
+    stats: [{ label: "Renderer options", value: "3" }, { label: "GPU vendors supported", value: "All" }],
+  },
+  {
+    icon: "📦",
+    title: "Broad Version Support",
+    color: "warn",
+    desc: "From Minecraft 1.8.9 all the way to the latest release. Supported builds get regular updates; unsupported builds are archived and still available for older modpacks and servers.",
+    stats: [{ label: "MC versions covered", value: "15+" }, { label: "Latest supported", value: "26.1" }],
+  },
+];
+---
+
+<section class="features">
+  <div class="feat-inner">
+    <div class="feat-header">
+      <div class="feat-eyebrow">Why OptiArk</div>
+      <h2 class="feat-title">Built to perform.</h2>
+      <p class="feat-sub">No fluff. No bloat. Just the mods that matter.</p>
+    </div>
+
+    <div class="feat-grid">
+      {features.map(f => (
+        <div class="feat-card">
+          <div class="feat-icon" style={`color: var(--${f.color}); border-color: var(--${f.color})`}>
+            {f.icon}
+          </div>
+          <h3 class="feat-name" style={`color: var(--${f.color})`}>{f.title}</h3>
+          <p class="feat-desc">{f.desc}</p>
+          <div class="feat-stats">
+            {f.stats.map(s => (
+              <div class="feat-stat">
+                <span class="fs-val">{s.value}</span>
+                <span class="fs-label">{s.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.features {
+  padding: 80px 24px;
+  border-top: 1px solid var(--border);
+}
+.feat-inner { max-width: 1100px; margin: 0 auto; }
+
+.feat-header { text-align: center; margin-bottom: 52px; }
+.feat-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(0,200,160,0.3);
+  padding: 4px 14px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+.feat-title {
+  font-family: var(--font-head);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.feat-sub { color: var(--muted); font-size: 1rem; }
+
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 800px) { .feat-grid { grid-template-columns: 1fr; } }
+
+.feat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.feat-card:hover { transform: translateY(-3px); }
+
+.feat-icon {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  border: 1px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  background: rgba(255,255,255,0.03);
+  flex-shrink: 0;
+}
+.feat-name {
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.feat-desc {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  flex: 1;
+}
+.feat-stats {
+  display: flex;
+  gap: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.feat-stat { display: flex; flex-direction: column; gap: 2px; }
+.fs-val {
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.fs-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.3px; }
+</style>

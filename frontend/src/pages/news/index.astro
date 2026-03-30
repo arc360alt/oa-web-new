@@ -1,0 +1,68 @@
+---
+import Base from "../../layouts/Base.astro";
+import Nav from "../../components/Nav.astro";
+import Footer from "../../components/Footer.astro";
+import { fetchNews } from "../../lib/api.js";
+
+let news = [];
+let error = null;
+try {
+  news = await fetchNews();
+} catch (e) {
+  error = "Could not load news.";
+}
+
+const tagColors = { green: "accent", blue: "accent2", yellow: "warn", red: "danger" };
+---
+
+<Base title="News — OptiArk">
+  <Nav active="news" />
+  <main class="page">
+    <div class="page-inner">
+      <h1 class="page-title">News</h1>
+      <p class="page-sub">Updates, tips, and announcements for OptiArk.</p>
+
+      {error && <p class="err">{error}</p>}
+
+      <div class="posts">
+        {news.map(post => (
+          <a href={`/news/${post.id}`} class="post-row">
+            <div class="post-meta">
+              <span class="post-tag" style={`color: var(--${tagColors[post.tagColor] || 'accent'})`}>{post.tag}</span>
+              <span class="post-date">
+                {new Date(post.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              </span>
+            </div>
+            <h2 class="post-title">{post.title}</h2>
+            <p class="post-summary">{post.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+.page { padding: 60px 24px; }
+.page-inner { max-width: 780px; margin: 0 auto; }
+.page-title { font-family: var(--font-head); font-size: 2.5rem; font-weight: 700; margin-bottom: 8px; }
+.page-sub { color: var(--muted); margin-bottom: 40px; }
+.err { color: var(--danger); }
+
+.posts { display: flex; flex-direction: column; gap: 2px; }
+.post-row {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 24px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.post-row:hover { background: var(--surface); border-color: var(--border); text-decoration: none; }
+.post-meta { display: flex; align-items: center; gap: 12px; }
+.post-tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.post-date { font-size: 0.8rem; color: var(--muted); }
+.post-title { font-family: var(--font-head); font-size: 1.4rem; font-weight: 700; color: var(--text); }
+.post-summary { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+</style>

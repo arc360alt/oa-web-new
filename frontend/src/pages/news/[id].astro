@@ -1,0 +1,80 @@
+---
+import Base from "../../layouts/Base.astro";
+import Nav from "../../components/Nav.astro";
+import Footer from "../../components/Footer.astro";
+import { fetchNews, fetchNewsPost } from "../../lib/api.js";
+
+// For static builds, generate paths from all news IDs
+export async function getStaticPaths() {
+  try {
+    const news = await fetchNews();
+    return news.map(post => ({ params: { id: post.id } }));
+  } catch {
+    return [];
+  }
+}
+
+const { id } = Astro.params;
+let post = null;
+let error = null;
+try {
+  post = await fetchNewsPost(id);
+} catch (e) {
+  error = "Post not found.";
+}
+
+const tagColors = { green: "accent", blue: "accent2", yellow: "warn", red: "danger" };
+const dateStr = post ? new Date(post.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "";
+---
+
+<Base title={post ? `${post.title} — OptiArk` : "OptiArk News"}>
+  <Nav active="news" />
+  <main class="page">
+    <div class="page-inner">
+      <a href="/news" class="back">← Back to News</a>
+
+      {error && <p class="err">{error}</p>}
+
+      {post && (
+        <article class="article">
+          <div class="article-meta">
+            <span class="tag" style={`color: var(--${tagColors[post.tagColor] || 'accent'})`}>{post.tag}</span>
+            <span class="date">{dateStr}</span>
+          </div>
+          <h1 class="article-title">{post.title}</h1>
+          <p class="article-summary">{post.summary}</p>
+          <div class="divider"></div>
+          <div class="article-body">
+            {post.body.split("\n\n").map(para => (
+              <p>{para}</p>
+            ))}
+          </div>
+        </article>
+      )}
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+.page { padding: 60px 24px; }
+.page-inner { max-width: 720px; margin: 0 auto; }
+.back { color: var(--muted); font-size: 0.85rem; display: inline-block; margin-bottom: 32px; }
+.back:hover { color: var(--accent); text-decoration: none; }
+.err { color: var(--danger); }
+
+.article { display: flex; flex-direction: column; gap: 16px; }
+.article-meta { display: flex; align-items: center; gap: 12px; }
+.tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.date { font-size: 0.8rem; color: var(--muted); }
+.article-title {
+  font-family: var(--font-head);
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+.article-summary { color: var(--muted); font-size: 1.05rem; line-height: 1.6; }
+.divider { height: 1px; background: var(--border); margin: 8px 0; }
+.article-body { display: flex; flex-direction: column; gap: 16px; }
+.article-body p { color: var(--text); line-height: 1.75; font-size: 0.97rem; white-space: pre-wrap; }
+</style>

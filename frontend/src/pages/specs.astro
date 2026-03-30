@@ -1,0 +1,200 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Base title="Specs — OptiArk" description="System requirements and mod list for OptiArk.">
+  <Nav active="specs" />
+  <main class="specs-page">
+    <div class="specs-inner">
+      <h1 class="page-title">Specifications</h1>
+      <p class="page-sub">What's inside OptiArk and what you need to run it.</p>
+
+      <div class="specs-grid">
+
+        <section class="spec-card">
+          <h2 class="card-title">System Requirements</h2>
+          <div class="req-table">
+            <div class="req-row head">
+              <span>Component</span>
+              <span>Minimum</span>
+              <span>Recommended</span>
+            </div>
+            <div class="req-row">
+              <span>RAM (allocated)</span>
+              <span>2 GB</span>
+              <span>4–6 GB</span>
+            </div>
+            <div class="req-row">
+              <span>GPU</span>
+              <span>OpenGL 4.5+</span>
+              <span>Dedicated GPU</span>
+            </div>
+            <div class="req-row">
+              <span>Java</span>
+              <span>Java 17</span>
+              <span>Java 21</span>
+            </div>
+            <div class="req-row">
+              <span>OS</span>
+              <span>Windows 10 / Linux</span>
+              <span>Windows 11 / Linux</span>
+            </div>
+            <div class="req-row">
+              <span>Disk Space</span>
+              <span>500 MB</span>
+              <span>1 GB+</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="spec-card">
+          <h2 class="card-title">Renderer Requirements</h2>
+          <div class="renderer-list">
+            <div class="renderer-item">
+              <div class="r-name sodium">Sodium</div>
+              <p>Any GPU with OpenGL 4.5 support. Works on AMD, NVIDIA, and Intel.</p>
+            </div>
+            <div class="renderer-item">
+              <div class="r-name vulkan">VulkanMod</div>
+              <p>GPU must support Vulkan 1.2+. Experimental — expect occasional instability.</p>
+            </div>
+            <div class="renderer-item">
+              <div class="r-name nvidia">Nividium</div>
+              <p>Requires an NVIDIA GPU with mesh shader support (RTX 20xx or newer recommended).</p>
+            </div>
+            <div class="renderer-item">
+              <div class="r-name embeddium">Embeddium</div>
+              <p>Forge only. Any GPU with OpenGL 4.5. For modded Minecraft on older versions.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="spec-card wide">
+          <h2 class="card-title">Core Mods Included</h2>
+          <p class="card-sub">This list applies to supported Sodium builds. VulkanMod/Nividium variants may differ slightly.</p>
+          <div class="mod-grid">
+            {[
+              ["Sodium", "Core renderer replacement. Foundation of OptiArk."],
+              ["Sodium Extra", "Extra graphics settings for Sodium not in vanilla."],
+              ["Reese's Sodium Options", "Improved settings UI for Sodium."],
+              ["Lithium", "Server-side and general game logic optimizations."],
+              ["FerriteCore", "Reduces memory usage significantly."],
+              ["EntityCulling", "Skips rendering of entities hidden behind walls."],
+              ["ImmediatelyFast", "Speeds up immediate mode rendering."],
+              ["ModernFix (In some versions)", "Fixes performance issues in the Minecraft engine."],
+              ["Chunky", "Pre-generates chunks to avoid in-game lag spikes."],
+              ["BadOptimizations", "Additional micro-optimizations."],
+              ["Dynamic FPS", "Reduces GPU usage when the window is unfocused."],
+              ["Nvidium (NV only)", "NVIDIA mesh-shader renderer on top of Sodium."],
+            ].map(([name, desc]) => (
+              <div class="mod-item">
+                <span class="mod-name">{name}</span>
+                <span class="mod-desc">{desc}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section class="spec-card">
+          <h2 class="card-title">Installation</h2>
+          <ol class="install-steps">
+            <li>Download the <code>.mrpack</code> file for your version and renderer.</li>
+            <li>Open <strong>Prism Launcher</strong>, <strong>Modrinth App</strong>, or any launcher that supports the mrpack format.</li>
+            <li>Import the pack: <em>Add Instance → Import from file</em> (Prism) or <em>Import</em> (Modrinth App).</li>
+            <li>Set Java 21 in instance settings if available.</li>
+            <li>Allocate 4–6 GB of RAM for best results.</li>
+            <li>Launch and enjoy.</li>
+          </ol>
+        </section>
+
+        <section class="spec-card">
+          <h2 class="card-title">Format Info</h2>
+          <p>OptiArk uses the <strong>.mrpack</strong> standard (Modrinth Pack Format). Mods are downloaded directly from Modrinth on first launch, the pack file itself is small.</p>
+          <br/>
+          <p>Legacy versions (1.21.10 and below) were distributed as <code>.zip</code> files. These are still available in the GitHub releases archive but are no longer supported.</p>
+        </section>
+
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+.specs-page { padding: 60px 24px; }
+.specs-inner { max-width: 1100px; margin: 0 auto; }
+.page-title { font-family: var(--font-head); font-size: 2.5rem; font-weight: 700; margin-bottom: 8px; }
+.page-sub { color: var(--muted); margin-bottom: 48px; }
+
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 700px) { .specs-grid { grid-template-columns: 1fr; } }
+
+.spec-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+}
+.spec-card.wide { grid-column: 1 / -1; }
+.card-title { font-family: var(--font-head); font-size: 1.3rem; font-weight: 700; margin-bottom: 16px; }
+.card-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; margin-top: -8px; }
+
+/* Requirements table */
+.req-table { display: flex; flex-direction: column; gap: 0; }
+.req-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.2fr;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+  gap: 8px;
+}
+.req-row:last-child { border-bottom: none; }
+.req-row.head { color: var(--muted); font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; }
+.req-row span:first-child { color: var(--text); font-weight: 500; }
+
+/* Renderer list */
+.renderer-list { display: flex; flex-direction: column; gap: 16px; }
+.renderer-item p { color: var(--muted); font-size: 0.87rem; margin-top: 4px; line-height: 1.5; }
+.r-name {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.r-name.sodium { color: var(--accent); }
+.r-name.vulkan { color: #a78bfa; }
+.r-name.nvidia { color: #76c442; }
+.r-name.embeddium { color: var(--accent2); }
+
+/* Mod grid */
+.mod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.mod-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.mod-name { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; color: var(--text); }
+.mod-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+
+/* Install steps */
+.install-steps { padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+.install-steps li { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+.install-steps li strong { color: var(--text); }
+.install-steps li em { color: var(--accent2); font-style: normal; }
+code {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.85em;
+  color: var(--accent);
+}
+</style>

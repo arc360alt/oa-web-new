@@ -1,0 +1,127 @@
+---
+const { banner } = Astro.props;
+---
+
+{banner?.active && (
+  <div class="banner">
+    <a href={banner.link}>{banner.message}</a>
+  </div>
+)}
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Performance Modpack</div>
+    <h1 class="hero-title">Opti<span>Ark</span></h1>
+    <p class="hero-sub">
+      Squeeze every frame out of Minecraft. Built for modern hardware,
+      available in Sodium, VulkanMod, Nividium, and Embeddium flavors.
+    </p>
+    <div class="hero-actions">
+      <a href="#downloads" class="btn-primary">Get it Now</a>
+      <a href="/specs" class="btn-ghost">View Specs →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-n">3</span><span class="stat-l">Renderers</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-n">15+</span><span class="stat-l">MC Versions</span></div>
+    </div>
+  </div>
+  <div class="hero-grid"></div>
+</section>
+
+<style>
+.banner {
+  background: rgba(0,200,160,0.12);
+  border-bottom: 1px solid rgba(0,200,160,0.25);
+  text-align: center;
+  padding: 10px 24px;
+  font-size: 0.88rem;
+}
+.banner a { color: white; text-decoration: none; }
+.banner a:hover { text-decoration: underline; }
+
+.hero {
+  position: relative;
+  padding: 100px 24px 80px;
+  overflow: hidden;
+}
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,200,160,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,160,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  pointer-events: none;
+}
+.hero-inner {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero-eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(0, 13, 200, 0.3);
+  padding: 4px 14px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+.hero-title {
+  font-family: var(--font-head);
+  font-size: clamp(3.5rem, 10vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+.hero-title span { color: var(--accent); }
+.hero-sub {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 520px;
+  margin: 0 auto 36px;
+  line-height: 1.7;
+}
+.hero-actions { display: flex; gap: 12px; justify-content: center; margin-bottom: 52px; flex-wrap: wrap; }
+.btn-primary {
+  padding: 13px 32px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover { opacity: 0.85; text-decoration: none; }
+.btn-ghost {
+  padding: 13px 28px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+.hero-stats { display: flex; align-items: center; justify-content: center; gap: 24px; }
+.stat { display: flex; flex-direction: column; align-items: center; }
+.stat-n {
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.stat-l { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.stat-div { width: 1px; height: 36px; background: var(--border); }
+</style>

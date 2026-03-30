@@ -1,0 +1,104 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Hero from "../components/Hero.astro";
+import DownloadSelector from "../components/DownloadSelector.astro";
+import Features from "../components/Features.astro";
+import Performance from "../components/Performance.astro";
+import Footer from "../components/Footer.astro";
+import { fetchDownloads, fetchNews } from "../lib/api.js";
+
+let downloadsData = null;
+let news = [];
+let error = null;
+
+try {
+  [downloadsData, news] = await Promise.all([fetchDownloads(), fetchNews()]);
+} catch (e) {
+  error = "Could not load data from the API. Make sure the API server is running.";
+}
+---
+
+<Base title="OptiArk — Minecraft Performance Modpack">
+  <Nav active="home" />
+
+  {error && (
+    <div class="api-error">
+      ⚠ {error}
+    </div>
+  )}
+
+  {downloadsData && (
+    <>
+      <Hero banner={downloadsData.banner} />
+      <DownloadSelector
+        categories={downloadsData.categories}
+        versionBackgrounds={downloadsData.versionBackgrounds}
+      />
+    </>
+  )}
+
+  <Features />
+  <Performance />
+
+  <!-- News preview strip -->
+  {news.length > 0 && (
+    <section class="news-strip">
+      <div class="strip-inner">
+        <div class="strip-header">
+          <h2 class="strip-title">Latest News</h2>
+          <a href="/news" class="strip-more">All posts →</a>
+        </div>
+        <div class="news-cards">
+          {news.slice(0, 3).map(post => (
+            <a href={`/news/${post.id}`} class="news-card">
+              <div class="card-tag" style={`color: var(--${post.tagColor === 'green' ? 'accent' : post.tagColor === 'blue' ? 'accent2' : 'warn'})`}>
+                {post.tag}
+              </div>
+              <div class="card-title">{post.title}</div>
+              <p class="card-summary">{post.summary}</p>
+              <span class="card-date">{new Date(post.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <Footer />
+</Base>
+
+<style>
+.api-error {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 14px 20px;
+  background: rgba(224, 82, 82, 0.1);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+.news-strip { padding: 60px 24px; border-top: 1px solid var(--border); }
+.strip-inner { max-width: 1100px; margin: 0 auto; }
+.strip-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
+.strip-title { font-family: var(--font-head); font-size: 1.8rem; font-weight: 700; }
+.strip-more { color: var(--accent); font-size: 0.9rem; }
+
+.news-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.news-card {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.news-card:hover { border-color: var(--accent); transform: translateY(-2px); text-decoration: none; }
+.card-tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.card-title { font-family: var(--font-head); font-size: 1.15rem; font-weight: 600; color: var(--text); }
+.card-summary { color: var(--muted); font-size: 0.85rem; line-height: 1.5; flex: 1; }
+.card-date { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+</style>

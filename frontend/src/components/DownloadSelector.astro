@@ -1,0 +1,343 @@
+---
+// DownloadSelector.astro — receives data as props from the page
+const { categories, versionBackgrounds } = Astro.props;
+---
+
+<section class="downloads" id="downloads">
+  <div class="section-inner">
+    <h2 class="section-title">Downloads</h2>
+    <p class="section-sub">Choose your renderer and Minecraft version below.</p>
+
+    <!-- Tech tabs -->
+    <div class="tabs" id="techTabs">
+      {Object.entries(categories).map(([name, cat], i) => (
+        <button
+          class:list={["tab", { active: i === 0 }]}
+          data-tech={name}
+          onclick="selectTech(this)"
+        >
+          <img src={cat.icon} alt={name} class="tab-icon" onerror="this.style.display='none'" />
+          {name}
+        </button>
+      ))}
+    </div>
+
+    <!-- Per-tech panel -->
+    {Object.entries(categories).map(([name, cat], i) => (
+      <div class:list={["tech-panel", { active: i === 0 }]} data-tech={name} id={`panel-${name}`}>
+        <p class="tech-desc">{cat.description}</p>
+        <div class="version-grid">
+          {cat.versions.map((v) => (
+            <button
+              class:list={["version-btn", { unsupported: !v.supported, unavailable: v.url === "" }]}
+              data-url={v.url}
+              data-note={v.note || ""}
+              data-label={v.label}
+              data-bg={versionBackgrounds[v.label.replace(/\s.+/, "")] || ""}
+              onclick="selectVersion(this)"
+            >
+              <span class="v-label">{v.label}</span>
+              {!v.supported && <span class="v-badge">Unsupported</span>}
+              {v.url === "" && <span class="v-badge unavail">Soon</span>}
+            </button>
+          ))}
+        </div>
+      </div>
+    ))}
+
+    <!-- Download card -->
+    <div class="dl-card" id="dlCard" style="display:none">
+      <div class="dl-bg" id="dlBg"></div>
+      <div class="dl-content">
+        <div class="dl-info">
+          <span class="dl-version" id="dlVersion">—</span>
+          <span class="dl-note" id="dlNote"></span>
+        </div>
+        <a class="dl-btn" id="dlBtn" href="#" target="_blank">Download ↓</a>
+      </div>
+    </div>
+    <p class="dl-hint" id="dlHint">← Select a version above</p>
+  </div>
+</section>
+
+<!-- Legacy warning modal -->
+<div class="modal-overlay" id="legacyModal">
+  <div class="modal">
+    <div class="modal-icon">⚠</div>
+    <h3 class="modal-title">Legacy Version</h3>
+    <p class="modal-body">
+      This version is <strong>no longer supported</strong> and may be broken, outdated, or missing mods.
+      It will not receive future updates or bug fixes.<br /><br />
+      Download and use it at your own risk.
+    </p>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeLegacyModal()">Go Back</button>
+      <a class="modal-confirm" id="modalDlBtn" href="#" target="_blank" onclick="closeLegacyModal()">Download Anyway</a>
+    </div>
+  </div>
+</div>
+
+<style>
+.downloads { padding: 80px 24px; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-title {
+  font-family: var(--font-head);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.section-sub { color: var(--muted); margin-bottom: 32px; }
+
+/* Tabs */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.tab {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.tab:hover { border-color: var(--accent); color: var(--text); }
+.tab.active { border-color: var(--accent); color: var(--accent); background: rgba(10, 0, 200, 0.07); }
+.tab-icon { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
+
+/* Panel */
+.tech-panel { display: none; }
+.tech-panel.active { display: block; }
+.tech-desc { color: var(--muted); margin-bottom: 16px; font-size: 0.9rem; }
+
+/* Version grid */
+.version-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.version-btn {
+  padding: 8px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.version-btn:hover:not(.unavailable) { border-color: var(--accent2); color: var(--accent2); }
+.version-btn.selected { border-color: var(--accent2); background: rgba(0,144,255,0.1); color: var(--accent2); }
+.version-btn.unsupported { opacity: 0.7; }
+.version-btn.unsupported:hover:not(.unavailable) { border-color: var(--warn); color: var(--warn); }
+.version-btn.unsupported.selected { border-color: var(--warn); background: rgba(245,166,35,0.1); color: var(--warn); }
+.version-btn.unavailable { opacity: 0.45; cursor: not-allowed; }
+.v-badge {
+  font-size: 0.7rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.v-badge.unavail { color: var(--warn); border-color: var(--warn); }
+
+/* Download card */
+.dl-card {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.dl-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.2;
+  transition: background-image 0.3s;
+}
+.dl-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 50px 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.dl-info { display: flex; flex-direction: column; gap: 4px; }
+.dl-version {
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.dl-note { font-size: 0.82rem; color: var(--warn); max-width: 500px; line-height: 1.4; }
+.dl-btn {
+  padding: 12px 32px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+.dl-btn:hover { opacity: 0.85; transform: translateY(-1px); text-decoration: none; }
+.dl-btn.disabled {
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.dl-hint { color: var(--muted); font-size: 0.85rem; }
+
+/* Legacy warning modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--warn);
+  border-radius: 14px;
+  padding: 36px;
+  max-width: 420px;
+  width: calc(100% - 48px);
+  text-align: center;
+  box-shadow: 0 0 40px rgba(245,166,35,0.15);
+  animation: modalIn 0.18s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.modal-title {
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--warn);
+  margin-bottom: 12px;
+}
+.modal-body { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+.modal-body strong { color: var(--text); }
+.modal-actions { display: flex; gap: 10px; justify-content: center; }
+.modal-cancel {
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.modal-cancel:hover { border-color: var(--text); color: var(--text); }
+.modal-confirm {
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  background: var(--warn);
+  color: #000;
+  font-weight: 700;
+  font-family: var(--font-head);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.modal-confirm:hover { opacity: 0.85; text-decoration: none; }
+</style>
+
+<script>
+  let currentTech = null;
+
+  window.selectTech = function(btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tech-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    currentTech = btn.dataset.tech;
+    document.getElementById(`panel-${currentTech}`).classList.add('active');
+    document.querySelectorAll('.version-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('dlCard').style.display = 'none';
+    document.getElementById('dlHint').style.display = 'block';
+  };
+
+  window.selectVersion = function(btn) {
+    if (btn.classList.contains('unavailable')) return;
+    document.querySelectorAll('.version-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    const url = btn.dataset.url;
+    const note = btn.dataset.note;
+    const label = btn.dataset.label;
+    const bg = btn.dataset.bg;
+    const isLegacy = btn.classList.contains('unsupported');
+
+    const card = document.getElementById('dlCard');
+    const dlBtn = document.getElementById('dlBtn');
+    document.getElementById('dlVersion').textContent = `${currentTech} — ${label}`;
+    document.getElementById('dlNote').textContent = note || '';
+    document.getElementById('dlBg').style.backgroundImage = bg ? `url(${bg})` : 'none';
+
+    // Tint the download card yellow for legacy
+    card.style.borderColor = isLegacy ? 'rgba(245,166,35,0.5)' : '';
+
+    if (url) {
+      dlBtn.href = url;
+      dlBtn.classList.remove('disabled');
+      if (isLegacy) {
+        dlBtn.textContent = 'Download (Unsupported) ↓';
+        dlBtn.style.background = 'var(--warn)';
+        // Intercept click to show warning first
+        dlBtn.onclick = function(e) {
+          e.preventDefault();
+          openLegacyModal(url);
+        };
+      } else {
+        dlBtn.textContent = 'Download ↓';
+        dlBtn.style.background = '';
+        dlBtn.onclick = null;
+      }
+    } else {
+      dlBtn.href = '#';
+      dlBtn.classList.add('disabled');
+      dlBtn.textContent = 'Not Available Yet';
+      dlBtn.style.background = '';
+      dlBtn.onclick = null;
+    }
+
+    card.style.display = 'block';
+    document.getElementById('dlHint').style.display = 'none';
+  };
+
+  window.openLegacyModal = function(url) {
+    document.getElementById('modalDlBtn').href = url;
+    document.getElementById('legacyModal').classList.add('open');
+  };
+
+  window.closeLegacyModal = function() {
+    document.getElementById('legacyModal').classList.remove('open');
+  };
+
+  // Close modal on overlay click
+  document.getElementById('legacyModal').addEventListener('click', function(e) {
+    if (e.target === this) closeLegacyModal();
+  });
+
+  // Auto-select first tab so currentTech is never null
+  const firstTab = document.querySelector('.tab');
+  if (firstTab) selectTech(firstTab);
+</script>
