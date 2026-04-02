@@ -1,11 +1,20 @@
 [
   {
-    "id": "optiark-rewrite-2025",
-    "date": "2025-06-10",
+    "id": "optiark-rewrite-2026",
+    "date": "2026-03-29",
     "title": "Welcome to the new OptiArk Website!",
     "tag": "Major Update",
     "tagColor": "green",
     "summary": "The OptiArk Website has been rewriten in Astro for better preformance and simpler UI!",
     "body": "The old OptiArk website was quite frankly slow, laggy, and just overall not good, so we decided to rebuild it in a new framework called Astro. This new website is much faster, more simple for users to navigate, and just overall better than the old one. We hope you enjoy the new website as much as we do!"
+  },
+  {
+    "id": "optiark-rewrite-2026-2",
+    "date": "2026-04-02",
+    "title": "This project is getting priority!",
+    "tag": "Update",
+    "tagColor": "orange",
+    "summary": "The OptiArk Project is getting priority over all my other projects!",
+    "body": "As of a few days ago, I cancled one of my biggest and most anoying to work on projects, ArkIDE, So that means I can now focus more time on working on this modpack!! Exciting."
   }
 ]
