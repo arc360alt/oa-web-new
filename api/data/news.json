@@ -16,5 +16,14 @@
     "tagColor": "orange",
     "summary": "The OptiArk Project is getting priority over all my other projects!",
     "body": "As of a few days ago, I cancled one of my biggest and most anoying to work on projects, ArkIDE, So that means I can now focus more time on working on this modpack!! Exciting."
+  },
+  {
+    "id": "26-1-1-support",
+    "date": "2026-04-02",
+    "title": "Sodium 26.1.1 Support Released!",
+    "tag": "Update",
+    "tagColor": "orange",
+    "summary": "Sodium 26.1.1 is now officially supported in OptiArk!",
+    "body": "Sodium 26.1.1 is now officially supported in OptiArk! You can now download 26.1.1 versions now. Vulkanmod is not supported yet and there is no mention of when it will be supported for 26.1.1 at this time."
   }
 ]
