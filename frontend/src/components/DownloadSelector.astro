@@ -33,7 +33,7 @@ const { categories, versionBackgrounds } = Astro.props;
               data-url={v.url}
               data-note={v.note || ""}
               data-label={v.label}
-              data-bg={versionBackgrounds[v.label.replace(/\s.+/, "")] || ""}
+              data-bg={versionBackgrounds[v.label.replace(/\s.+/, "").trim()] || ""}
               onclick="selectVersion(this)"
             >
               <span class="v-label">{v.label}</span>
