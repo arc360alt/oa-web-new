@@ -272,6 +272,7 @@
     }
   },
   "versionBackgrounds": {
+    "26.1.2": "https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/screenshots/26.1.2-1170x500.jpg",
     "26.1.1": "https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/screenshots/26-1-1_1170x500.jpg",
     "26.1": "https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/screenshots/26.1_1170x500.jpg",
     "1.21.11": "https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/MCV_MountsOfMayhem_Launch_editorial_1170x500.jpg",
