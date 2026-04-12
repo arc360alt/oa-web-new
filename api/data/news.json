@@ -25,5 +25,14 @@
     "tagColor": "orange",
     "summary": "Sodium 26.1.1 is now officially supported in OptiArk!",
     "body": "Sodium 26.1.1 is now officially supported in OptiArk! You can now download 26.1.1 versions now. Vulkanmod is not supported yet and there is no mention of when it will be supported for 26.1.1 at this time."
+  },
+  {
+    "id": "26-1-2-support",
+    "date": "2026-04-11",
+    "title": "Sodium 26.1.2 Support Released!",
+    "tag": "Update",
+    "tagColor": "orange",
+    "summary": "Sodium 26.1.2 is now officially supported in OptiArk!",
+    "body": "No discription needed, 26.1.2 support released."
   }
 ]
