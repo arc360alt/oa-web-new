@@ -11,6 +11,74 @@ import Footer from "../components/Footer.astro";
       <h1 class="page-title">Specifications</h1>
       <p class="page-sub">What's inside OptiArk and what you need to run it.</p>
 
+      <!-- Features Graph 
+      <section class="features-graph">
+        <h2 class="card-title">Renderer Feature Comparison</h2>
+        <div class="features-table-wrap">
+          <table class="features-table">
+            <thead>
+              <tr>
+                <th>Renderer</th>
+                <th>Shaders</th>
+                <th>Good Hardware Support</th>
+                <th>NVIDIA-only</th>
+                <th>Forge</th>
+                <th>Mesh Shaders</th>
+                <th>Extra Settings</th>
+                <th>Experimental</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="r-name sodium">Sodium</span></td>
+                <td>✔</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✔</td>
+                <td>✗</td>
+              </tr>
+              <tr>
+                <td><span class="r-name nvidia">Nividium</span></td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✔</td>
+                <td>✗</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td>/</td>
+              </tr>
+              <tr>
+                <td><span class="r-name vulkan">VulkanMod</span></td>
+                <td>/¹</td>
+                <td>✔</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>/</td>
+                <td>✔</td>
+                <td>✔</td>
+              </tr>
+              <tr>
+                <td><span class="r-name embeddium">Embeddium</span></td>
+                <td>✔</td>
+                <td>✗</td>
+                <td>✗</td>
+                <td>✔</td>
+                <td>✗</td>
+                <td>/</td>
+                <td>✗</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="features-legend">
+          <span>✔ Supported</span> <span>✗ Not Supported</span> <span>/ Partial/Experimental</span>
+          <p>¹: Requieres the Beryl mod to be installed for shaders to work. Does not come pre included right now.</p>
+        </div>
+      </section>
+      This feature is work in progress and will be added later.  -->
+
       <div class="specs-grid">
 
         <section class="spec-card">
@@ -32,7 +100,7 @@ import Footer from "../components/Footer.astro";
               <span>Dedicated GPU</span>
             </div>
             <div class="req-row">
-              <span>Java</span>
+              <span>Java*</span>
               <span>Java 17</span>
               <span>Java 21</span>
             </div>
@@ -47,6 +115,7 @@ import Footer from "../components/Footer.astro";
               <span>1 GB+</span>
             </div>
           </div>
+          <p class="npte">* Depends on what version you're playing for the Java version (Java 21 is needed for 1.20.5 and newer, Java 17 is needed for 1.18 and lower, and Java 8 is for 1.16.5 and lower.)</p>
         </section>
 
         <section class="spec-card">
@@ -197,4 +266,52 @@ code {
   font-size: 0.85em;
   color: var(--accent);
 }
+/* Features Graph */
+.features-graph {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 32px;
+}
+.features-table-wrap { overflow-x: auto; }
+.features-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.97rem;
+  margin-bottom: 8px;
+}
+.features-table th, .features-table td {
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: center;
+}
+.features-table th {
+  background: var(--surface2);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.features-table td:first-child, .features-table th:first-child {
+  text-align: left;
+  font-weight: 700;
+}
+.features-legend {
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  gap: 18px;
+  margin-top: 6px;
+}
+.features-table .r-name { font-size: 1rem; font-weight: 700; }
+.features-table .r-name.sodium { color: var(--accent); }
+.features-table .r-name.vulkan { color: #a78bfa; }
+.features-table .r-name.nvidia { color: #76c442; }
+.features-table .r-name.embeddium { color: var(--accent2); }
+
+.npte {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 </style>

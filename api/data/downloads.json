@@ -84,19 +84,19 @@
       "versions": [
         {
           "label": "26.1.2",
-          "url": "",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/vulkanmod-26.1-versions/OptiArk-vulkanmod-26.1.2.mrpack",
           "supported": true,
-          "note": "Not released yet."
+          "note": "If you have issues starting the game, add JVM argument: -Dorg.lwjgl.system.stackSize=256"
         },
         {
           "label": "26.1.1",
-          "url": "",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/vulkanmod-26.1-versions/OptiArk-vulkanmod-26.1.1.mrpack",
           "supported": true,
-          "note": "Not released yet."
+          "note": "If you have issues starting the game, add JVM argument: -Dorg.lwjgl.system.stackSize=256"
         },
         {
           "label": "26.1",
-          "url": "",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/vulkanmod-26.1-versions/OptiArk-vulkanmod-26.1.mrpack",
           "supported": true,
           "note": "This verison has not been released and probably will never be, only 26.1.1 is going to be officaly supported."
         },
@@ -291,8 +291,8 @@
     "1.8.9": "https://minecraft.wiki/images/thumb/Java_Edition_1.8.9.png/800px-Java_Edition_1.8.9.png?3d88b"
   },
   "banner": {
-    "message": "26.1.2 Support!",
-    "link": "/news/26-1-2-support",
+    "message": "26.1-26.1.2 Vulkanmod support is here!!!",
+    "link": "/news/vk-support",
     "active": true
   }
 }

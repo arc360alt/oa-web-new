@@ -34,5 +34,14 @@
     "tagColor": "orange",
     "summary": "Sodium 26.1.2 is now officially supported in OptiArk!",
     "body": "No discription needed, 26.1.2 support released."
+  },
+  {
+    "id": "vk-support",
+    "date": "2026-04-15",
+    "title": "Vulkanmod 26.1, 26.1.1, and 26.1.2 support is FINNALY here.",
+    "tag": "Update",
+    "tagColor": "orange",
+    "summary": "The title explains it all.",
+    "body": "Well here we are, we finnaly have support for all 3 of these versions after a pretty long time, have fun, and also if you want shaders on Vulkanmod install the Beryl mod on Modrinth!"
   }
 ]

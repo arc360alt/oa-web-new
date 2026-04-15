@@ -20,11 +20,6 @@ const { banner } = Astro.props;
       <a href="#downloads" class="btn-primary">Get it Now</a>
       <a href="/specs" class="btn-ghost">View Specs →</a>
     </div>
-    <div class="hero-stats">
-      <div class="stat"><span class="stat-n">3</span><span class="stat-l">Renderers</span></div>
-      <div class="stat-div"></div>
-      <div class="stat"><span class="stat-n">15+</span><span class="stat-l">MC Versions</span></div>
-    </div>
   </div>
   <div class="hero-grid"></div>
 </section>
@@ -42,7 +37,12 @@ const { banner } = Astro.props;
 
 .hero {
   position: relative;
-  padding: 100px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 1000px;
+  padding: 24px;
   overflow: hidden;
 }
 .hero-grid {
