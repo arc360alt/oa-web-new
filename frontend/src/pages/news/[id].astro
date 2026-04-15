@@ -4,16 +4,6 @@ import Nav from "../../components/Nav.astro";
 import Footer from "../../components/Footer.astro";
 import { fetchNews, fetchNewsPost } from "../../lib/api.js";
 
-// For static builds, generate paths from all news IDs
-export async function getStaticPaths() {
-  try {
-    const news = await fetchNews();
-    return news.map(post => ({ params: { id: post.id } }));
-  } catch {
-    return [];
-  }
-}
-
 const { id } = Astro.params;
 let post = null;
 let error = null;
