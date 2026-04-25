@@ -6,7 +6,7 @@
       "versions": [
         {
           "label": "26.1.2",
-          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/v1.5.0-26.1.2support/OptiArk-sodium-26.1.2.mrpack",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/v1.5.0-updoot/OptiArk-sodium-26.1.2.mrpack",
           "supported": true,
           "note": null
         },
@@ -84,7 +84,7 @@
       "versions": [
         {
           "label": "26.1.2",
-          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/vulkanmod-26.1-versions/OptiArk-vulkanmod-26.1.2.mrpack",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/v1.5.0-updoot/OptiArk-vulkanmod-26.1.2.mrpack",
           "supported": true,
           "note": "If you have issues starting the game, add JVM argument: -Dorg.lwjgl.system.stackSize=256"
         },
@@ -144,7 +144,7 @@
       "versions": [
         {
           "label": "26.1.2",
-          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/v1.5.0-26.1.2support/OptiArk-nvidium-26.1.2.mrpack",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/v1.5.0-updoot/OptiArk-nvidium-26.1.2.mrpack",
           "supported": true,
           "note": null
         },
