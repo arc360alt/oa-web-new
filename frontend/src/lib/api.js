@@ -1,5 +1,5 @@
 // Central API client — update API_BASE for production deployment
-const API_BASE = import.meta.env.PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE = import.meta.env.PUBLIC_API_URL || "http://oaapi.arc360hub.com/";
 
 export async function fetchDownloads() {
   const res = await fetch(`${API_BASE}/api/downloads`);
