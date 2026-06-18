@@ -35,7 +35,7 @@ import Footer from "../components/Footer.astro";
     }
   }
 
-  const API_BASE = ((import.meta as any).env?.PUBLIC_API_URL ?? 'http://oaapi.arc360hub.com').replace(/\/$/, '');
+  const API_BASE = ((import.meta as any).env?.PUBLIC_API_URL ?? 'https://oaapi.arc360hub.com').replace(/\/$/, '');
 
   async function initPage() {
     try {

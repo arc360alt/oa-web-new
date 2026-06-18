@@ -19,7 +19,7 @@ import Footer from "../../components/Footer.astro";
 </Base>
 
 <script>
-  const API_BASE = ((import.meta as any).env?.PUBLIC_API_URL ?? 'http://oaapi.arc360hub.com').replace(/\/$/, '');
+  const API_BASE = ((import.meta as any).env?.PUBLIC_API_URL ?? 'https://oaapi.arc360hub.com').replace(/\/$/, '');
 
   const tagVar: Record<string, string> = { green: 'accent', blue: 'accent2', yellow: 'warn', red: 'danger' };
 
