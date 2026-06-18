@@ -1,12 +1,10 @@
 ---
-const { banner } = Astro.props;
+// Banner is populated client-side
 ---
 
-{banner?.active && (
-  <div class="banner">
-    <a href={banner.link}>{banner.message}</a>
-  </div>
-)}
+<div id="siteBanner" class="banner" style="display:none">
+  <a id="siteBannerLink" href="#">—</a>
+</div>
 
 <section class="hero">
   <div class="hero-inner">

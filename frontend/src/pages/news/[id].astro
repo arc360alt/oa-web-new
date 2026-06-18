@@ -2,58 +2,85 @@
 import Base from "../../layouts/Base.astro";
 import Nav from "../../components/Nav.astro";
 import Footer from "../../components/Footer.astro";
-import { fetchNewsPost } from "../../lib/api.js";
 
 const { id } = Astro.params;
-let post = null;
-let error = null;
-try {
-  post = await fetchNewsPost(id);
-} catch (e) {
-  error = "Post not found.";
-}
-
-const tagColors = { green: "accent", blue: "accent2", yellow: "warn", red: "danger" };
-const dateStr = post ? new Date(post.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "";
 ---
 
-<Base title={post ? `${post.title} — OptiArk` : "OptiArk News"}>
+<Base title="OptiArk News">
   <Nav active="news" />
-  <main class="page">
+  <main class="page" data-post-id={id}>
     <div class="page-inner">
       <a href="/news" class="back">← Back to News</a>
-
-      {error && <p class="err">{error}</p>}
-
-      {post && (
-        <article class="article">
-          <div class="article-meta">
-            <span class="tag" style={`color: var(--${tagColors[post.tagColor] || 'accent'})`}>{post.tag}</span>
-            <span class="date">{dateStr}</span>
-          </div>
-          <h1 class="article-title">{post.title}</h1>
-          <p class="article-summary">{post.summary}</p>
-          <div class="divider"></div>
-          <div class="article-body">
-            {post.body.split("\n\n").map(para => (
-              <p>{para}</p>
-            ))}
-          </div>
-        </article>
-      )}
+      <div id="postLoading" class="loading-msg">Loading…</div>
+      <div id="postError" class="err" style="display:none"></div>
+      <article id="postContent" style="display:none">
+        <div class="article-meta">
+          <span class="tag" id="postTag"></span>
+          <span class="date" id="postDate"></span>
+        </div>
+        <h1 class="article-title" id="postTitle"></h1>
+        <p class="article-summary" id="postSummary"></p>
+        <div class="divider"></div>
+        <div class="article-body" id="postBody"></div>
+      </article>
     </div>
   </main>
   <Footer />
 </Base>
+
+<script>
+  const API_BASE = ((import.meta as any).env?.PUBLIC_API_URL ?? 'http://oaapi.arc360hub.com').replace(/\/$/, '');
+  const id = (document.querySelector('main') as HTMLElement | null)?.dataset.postId ?? '';
+
+  const tagVar: Record<string, string> = { green: 'accent', blue: 'accent2', yellow: 'warn', red: 'danger' };
+
+  async function loadPost() {
+    const loading = document.getElementById('postLoading');
+    const errEl = document.getElementById('postError');
+    const content = document.getElementById('postContent');
+
+    try {
+      const post = await fetch(`${API_BASE}/api/news/${id}`).then(r => {
+        if (!r.ok) throw new Error('not found');
+        return r.json();
+      });
+
+      document.title = `${post.title} — OptiArk`;
+
+      const tagEl = document.getElementById('postTag');
+      if (tagEl) {
+        tagEl.textContent = post.tag ?? '';
+        tagEl.style.color = `var(--${tagVar[post.tagColor] ?? 'accent'})`;
+      }
+      const dateEl = document.getElementById('postDate');
+      if (dateEl) dateEl.textContent = new Date(post.date).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+      const titleEl = document.getElementById('postTitle');
+      if (titleEl) titleEl.textContent = post.title ?? '';
+      const summaryEl = document.getElementById('postSummary');
+      if (summaryEl) summaryEl.textContent = post.summary ?? '';
+      const bodyEl = document.getElementById('postBody');
+      if (bodyEl) bodyEl.innerHTML = ((post.body ?? '') as string).split('\n\n').map(p => `<p>${p}</p>`).join('');
+
+      if (loading) loading.style.display = 'none';
+      if (content) content.style.display = 'block';
+    } catch {
+      if (loading) loading.style.display = 'none';
+      if (errEl) { errEl.textContent = 'Post not found.'; errEl.style.display = 'block'; }
+    }
+  }
+
+  loadPost();
+</script>
 
 <style>
 .page { padding: 60px 24px; }
 .page-inner { max-width: 720px; margin: 0 auto; }
 .back { color: var(--muted); font-size: 0.85rem; display: inline-block; margin-bottom: 32px; }
 .back:hover { color: var(--accent); text-decoration: none; }
+.loading-msg { color: var(--muted); font-size: 0.9rem; }
 .err { color: var(--danger); }
 
-.article { display: flex; flex-direction: column; gap: 16px; }
+article { display: flex; flex-direction: column; gap: 16px; }
 .article-meta { display: flex; align-items: center; gap: 12px; }
 .tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
 .date { font-size: 0.8rem; color: var(--muted); }

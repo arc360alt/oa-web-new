@@ -1,6 +1,5 @@
 ---
-// DownloadSelector.astro — receives data as props from the page
-const { categories, versionBackgrounds } = Astro.props;
+// DownloadSelector — data is fetched client-side on every page load
 ---
 
 <section class="downloads" id="downloads">
@@ -8,45 +7,13 @@ const { categories, versionBackgrounds } = Astro.props;
     <h2 class="section-title">Downloads</h2>
     <p class="section-sub">Choose your renderer and Minecraft version below.</p>
 
-    <!-- Tech tabs -->
-    <div class="tabs" id="techTabs">
-      {Object.entries(categories).map(([name, cat], i) => (
-        <button
-          class:list={["tab", { active: i === 0 }]}
-          data-tech={name}
-          onclick="selectTech(this)"
-        >
-          <img src={cat.icon} alt={name} class="tab-icon" onerror="this.style.display='none'" />
-          {name}
-        </button>
-      ))}
-    </div>
+    <div id="dlSpinner" class="dl-spinner">Loading versions…</div>
 
-    <!-- Per-tech panel -->
-    {Object.entries(categories).map(([name, cat], i) => (
-      <div class:list={["tech-panel", { active: i === 0 }]} data-tech={name} id={`panel-${name}`}>
-        <p class="tech-desc">{cat.description}</p>
-        <div class="version-grid">
-          {cat.versions.map((v) => (
-            <button
-              class:list={["version-btn", { unsupported: !v.supported, unavailable: v.url === "", beta: v.beta }]}
-              data-url={v.url}
-              data-note={v.note || ""}
-              data-label={v.label}
-              data-bg={versionBackgrounds[v.label] || versionBackgrounds[v.label.replace(/\s.+/, "").trim()] || ""}
-              data-beta={v.beta ? "true" : ""}
-              data-unsupported-mods={v.unsupportedMods ? JSON.stringify(v.unsupportedMods) : ""}
-              onclick="selectVersion(this)"
-            >
-              <span class="v-label">{v.label}</span>
-              {v.beta && <span class="v-badge beta-badge">Beta</span>}
-              {!v.supported && <span class="v-badge">Unsupported</span>}
-              {v.url === "" && <span class="v-badge unavail">Soon</span>}
-            </button>
-          ))}
-        </div>
-      </div>
-    ))}
+    <!-- Tech tabs (populated by renderDownloads) -->
+    <div class="tabs" id="techTabs" style="display:none"></div>
+
+    <!-- Per-tech panels (populated by renderDownloads) -->
+    <div id="techPanels"></div>
 
     <!-- Download card -->
     <div class="dl-card" id="dlCard" style="display:none">
@@ -59,7 +26,7 @@ const { categories, versionBackgrounds } = Astro.props;
         <a class="dl-btn" id="dlBtn" href="#" target="_blank">Download ↓</a>
       </div>
     </div>
-    <p class="dl-hint" id="dlHint">← Select a version above</p>
+    <p class="dl-hint" id="dlHint" style="display:none">← Select a version above</p>
   </div>
 </section>
 
@@ -110,6 +77,8 @@ const { categories, versionBackgrounds } = Astro.props;
   margin-bottom: 6px;
 }
 .section-sub { color: var(--muted); margin-bottom: 32px; }
+
+.dl-spinner { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
 
 /* Tabs */
 .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
@@ -223,7 +192,7 @@ const { categories, versionBackgrounds } = Astro.props;
 }
 .dl-hint { color: var(--muted); font-size: 0.85rem; }
 
-/* Legacy warning modal */
+/* Modals */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -312,40 +281,113 @@ const { categories, versionBackgrounds } = Astro.props;
 </style>
 
 <script>
-  let currentTech = null;
+  declare global {
+    interface Window {
+      renderDownloads: (categories: Record<string, any>, versionBackgrounds: Record<string, string>) => void;
+      selectTech: (btn: HTMLElement) => void;
+      selectVersion: (btn: HTMLElement) => void;
+    }
+  }
 
-  window.selectTech = function(btn) {
+  let currentTech: string | null = null;
+
+  // Called by the page-level script once API data is fetched
+  window.renderDownloads = function(
+    categories: Record<string, any>,
+    versionBackgrounds: Record<string, string>
+  ) {
+    function ea(s: unknown) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function eh(s: unknown) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    const names = Object.keys(categories);
+
+    const tabsHtml = names.map((name, i) => {
+      const cat = categories[name];
+      return `<button class="tab${i === 0 ? ' active' : ''}" data-tech="${ea(name)}" onclick="selectTech(this)">
+        <img src="${ea(cat.icon)}" alt="${ea(name)}" class="tab-icon" onerror="this.style.display='none'" />${eh(name)}</button>`;
+    }).join('');
+
+    const panelsHtml = names.map((name, i) => {
+      const cat = categories[name];
+      const versionsHtml = (cat.versions as any[]).map(v => {
+        const label: string = v.label || '';
+        const bg = (versionBackgrounds[label] || versionBackgrounds[label.replace(/\s.+/, '').trim()] || '');
+        const classes = ['version-btn'];
+        if (!v.supported) classes.push('unsupported');
+        if (!v.url) classes.push('unavailable');
+        if (v.beta) classes.push('beta');
+        const mods = v.unsupportedMods ? JSON.stringify(v.unsupportedMods) : '';
+        return `<button class="${classes.join(' ')}"
+          data-url="${ea(v.url || '')}" data-note="${ea(v.note || '')}" data-label="${ea(label)}"
+          data-bg="${ea(bg)}" data-beta="${v.beta ? 'true' : ''}" data-unsupported-mods="${ea(mods)}"
+          onclick="selectVersion(this)">
+          <span class="v-label">${eh(label)}</span>
+          ${v.beta ? '<span class="v-badge beta-badge">Beta</span>' : ''}
+          ${!v.supported ? '<span class="v-badge">Unsupported</span>' : ''}
+          ${!v.url ? '<span class="v-badge unavail">Soon</span>' : ''}
+        </button>`;
+      }).join('');
+
+      return `<div class="tech-panel${i === 0 ? ' active' : ''}" data-tech="${ea(name)}" id="panel-${ea(name)}">
+        <p class="tech-desc">${eh(cat.description)}</p>
+        <div class="version-grid">${versionsHtml}</div>
+      </div>`;
+    }).join('');
+
+    const tabsEl = document.getElementById('techTabs');
+    const panelsEl = document.getElementById('techPanels');
+    if (tabsEl) { tabsEl.innerHTML = tabsHtml; tabsEl.style.display = ''; }
+    if (panelsEl) panelsEl.innerHTML = panelsHtml;
+    const spinner = document.getElementById('dlSpinner');
+    if (spinner) spinner.style.display = 'none';
+    const hint = document.getElementById('dlHint');
+    if (hint) hint.style.display = 'block';
+
+    const firstTab = document.querySelector<HTMLElement>('.tab');
+    if (firstTab) selectTech(firstTab);
+  };
+
+  window.selectTech = function(btn: HTMLElement) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tech-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
-    currentTech = btn.dataset.tech;
-    document.getElementById(`panel-${currentTech}`).classList.add('active');
+    currentTech = btn.dataset.tech ?? null;
+    if (currentTech) document.getElementById(`panel-${currentTech}`)?.classList.add('active');
     document.querySelectorAll('.version-btn').forEach(b => b.classList.remove('selected'));
-    document.getElementById('dlCard').style.display = 'none';
-    document.getElementById('dlHint').style.display = 'block';
+    const card = document.getElementById('dlCard');
+    if (card) card.style.display = 'none';
+    const hint = document.getElementById('dlHint');
+    if (hint) hint.style.display = 'block';
   };
 
-  window.selectVersion = function(btn) {
+  window.selectVersion = function(btn: HTMLElement) {
     if (btn.classList.contains('unavailable')) return;
     document.querySelectorAll('.version-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
 
-    const url = btn.dataset.url;
-    const note = btn.dataset.note;
-    const label = btn.dataset.label;
-    const bg = btn.dataset.bg;
+    const url = btn.dataset.url ?? '';
+    const note = btn.dataset.note ?? '';
+    const label = btn.dataset.label ?? '';
+    const bg = btn.dataset.bg ?? '';
     const isLegacy = btn.classList.contains('unsupported');
     const isBeta = btn.dataset.beta === 'true';
-    const unsupportedMods = btn.dataset.unsupportedMods ? JSON.parse(btn.dataset.unsupportedMods) : [];
+    const unsupportedMods: string[] = btn.dataset.unsupportedMods ? JSON.parse(btn.dataset.unsupportedMods) : [];
 
-    const card = /** @type {HTMLElement} */ (document.getElementById('dlCard'));
-    const dlBtn = /** @type {HTMLAnchorElement} */ (document.getElementById('dlBtn'));
+    const card = document.getElementById('dlCard') as HTMLElement | null;
+    const dlBtn = document.getElementById('dlBtn') as HTMLAnchorElement | null;
     if (!card || !dlBtn) return;
-    document.getElementById('dlVersion').textContent = `${currentTech} — ${label}`;
-    document.getElementById('dlNote').textContent = note || '';
-    document.getElementById('dlBg').style.backgroundImage = bg ? `url(${bg})` : 'none';
 
-    // Tint card based on version type
+    const verEl = document.getElementById('dlVersion');
+    if (verEl) verEl.textContent = `${currentTech} — ${label}`;
+    const noteEl = document.getElementById('dlNote');
+    if (noteEl) noteEl.textContent = note;
+    const bgEl = document.getElementById('dlBg') as HTMLElement | null;
+    if (bgEl) bgEl.style.backgroundImage = bg ? `url(${bg})` : 'none';
+
     if (isBeta) {
       card.style.borderColor = 'rgba(167,139,250,0.5)';
     } else if (isLegacy) {
@@ -360,17 +402,11 @@ const { categories, versionBackgrounds } = Astro.props;
       if (isBeta) {
         dlBtn.textContent = 'Download (Beta) ↓';
         dlBtn.style.background = '#a78bfa';
-        dlBtn.onclick = function(e) {
-          e.preventDefault();
-          openBetaModal(url, unsupportedMods);
-        };
+        dlBtn.onclick = (e) => { e.preventDefault(); openBetaModal(url, unsupportedMods); };
       } else if (isLegacy) {
         dlBtn.textContent = 'Download (Unsupported) ↓';
         dlBtn.style.background = 'var(--warn)';
-        dlBtn.onclick = function(e) {
-          e.preventDefault();
-          openLegacyModal(url);
-        };
+        dlBtn.onclick = (e) => { e.preventDefault(); openLegacyModal(url); };
       } else {
         dlBtn.textContent = 'Download ↓';
         dlBtn.style.background = '';
@@ -385,7 +421,8 @@ const { categories, versionBackgrounds } = Astro.props;
     }
 
     card.style.display = 'block';
-    document.getElementById('dlHint').style.display = 'none';
+    const hint = document.getElementById('dlHint');
+    if (hint) hint.style.display = 'none';
   };
 
   function openBetaModal(url: string, unsupportedMods: string[]) {
@@ -393,8 +430,8 @@ const { categories, versionBackgrounds } = Astro.props;
     if (dlBtn) dlBtn.href = url;
     const modsSection = document.getElementById('betaModsSection') as HTMLElement | null;
     const modsList = document.getElementById('betaModsList') as HTMLElement | null;
-    if (unsupportedMods && unsupportedMods.length > 0) {
-      if (modsList) modsList.innerHTML = unsupportedMods.map((m: string) => `<li>${m}</li>`).join('');
+    if (unsupportedMods.length > 0) {
+      if (modsList) modsList.innerHTML = unsupportedMods.map(m => `<li>${m}</li>`).join('');
       if (modsSection) modsSection.style.display = 'block';
     } else {
       if (modsSection) modsSection.style.display = 'none';
@@ -427,8 +464,4 @@ const { categories, versionBackgrounds } = Astro.props;
   document.getElementById('legacyModal')?.addEventListener('click', function(e) {
     if (e.target === this) closeLegacyModal();
   });
-
-  // Auto-select first tab so currentTech is never null
-  const firstTab = document.querySelector('.tab');
-  if (firstTab) selectTech(firstTab);
 </script>

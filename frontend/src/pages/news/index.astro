@@ -2,17 +2,6 @@
 import Base from "../../layouts/Base.astro";
 import Nav from "../../components/Nav.astro";
 import Footer from "../../components/Footer.astro";
-import { fetchNews } from "../../lib/api.js";
-
-let news = [];
-let error = null;
-try {
-  news = await fetchNews();
-} catch (e) {
-  error = "Could not load news.";
-}
-
-const tagColors = { green: "accent", blue: "accent2", yellow: "warn", red: "danger" };
 ---
 
 <Base title="News — OptiArk">
@@ -21,33 +10,53 @@ const tagColors = { green: "accent", blue: "accent2", yellow: "warn", red: "dang
     <div class="page-inner">
       <h1 class="page-title">News</h1>
       <p class="page-sub">Updates, tips, and announcements for OptiArk.</p>
-
-      {error && <p class="err">{error}</p>}
-
-      <div class="posts">
-        {news.map(post => (
-          <a href={`/news/${post.id}`} class="post-row">
-            <div class="post-meta">
-              <span class="post-tag" style={`color: var(--${tagColors[post.tagColor] || 'accent'})`}>{post.tag}</span>
-              <span class="post-date">
-                {new Date(post.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-              </span>
-            </div>
-            <h2 class="post-title">{post.title}</h2>
-            <p class="post-summary">{post.summary}</p>
-          </a>
-        ))}
-      </div>
+      <div id="postsLoading" class="loading-msg">Loading posts…</div>
+      <div id="postsError" class="err" style="display:none"></div>
+      <div class="posts" id="postsList"></div>
     </div>
   </main>
   <Footer />
 </Base>
+
+<script>
+  const API_BASE = ((import.meta as any).env?.PUBLIC_API_URL ?? 'http://oaapi.arc360hub.com').replace(/\/$/, '');
+
+  const tagVar: Record<string, string> = { green: 'accent', blue: 'accent2', yellow: 'warn', red: 'danger' };
+
+  async function loadNews() {
+    const loading = document.getElementById('postsLoading') as HTMLElement | null;
+    const errEl = document.getElementById('postsError') as HTMLElement | null;
+    const list = document.getElementById('postsList');
+
+    try {
+      const news: any[] = await fetch(`${API_BASE}/api/news`).then(r => r.json());
+      if (loading) loading.style.display = 'none';
+      if (list) {
+        list.innerHTML = news.map(post => `
+          <a href="/news/${post.id}" class="post-row">
+            <div class="post-meta">
+              <span class="post-tag" style="color:var(--${tagVar[post.tagColor] ?? 'accent'})">${post.tag ?? ''}</span>
+              <span class="post-date">${new Date(post.date).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</span>
+            </div>
+            <h2 class="post-title">${post.title ?? ''}</h2>
+            <p class="post-summary">${post.summary ?? ''}</p>
+          </a>`).join('');
+      }
+    } catch {
+      if (loading) loading.style.display = 'none';
+      if (errEl) { errEl.textContent = 'Could not load news.'; errEl.style.display = 'block'; }
+    }
+  }
+
+  loadNews();
+</script>
 
 <style>
 .page { padding: 60px 24px; }
 .page-inner { max-width: 780px; margin: 0 auto; }
 .page-title { font-family: var(--font-head); font-size: 2.5rem; font-weight: 700; margin-bottom: 8px; }
 .page-sub { color: var(--muted); margin-bottom: 40px; }
+.loading-msg { color: var(--muted); font-size: 0.9rem; }
 .err { color: var(--danger); }
 
 .posts { display: flex; flex-direction: column; gap: 2px; }
