@@ -66,7 +66,7 @@
   </div>
 </div>
 
-<style>
+<style is:global>
 .downloads { padding: 80px 24px; }
 .section-inner { max-width: 1100px; margin: 0 auto; }
 .section-title {
@@ -348,7 +348,7 @@
     if (hint) hint.style.display = 'block';
 
     const firstTab = document.querySelector<HTMLElement>('.tab');
-    if (firstTab) selectTech(firstTab);
+    if (firstTab) window.selectTech(firstTab);
   };
 
   window.selectTech = function(btn: HTMLElement) {

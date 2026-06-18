@@ -52,7 +52,7 @@
     "tagColor": "orange",
     "summary": "This article exlpains what will happen to this modpack when the big 26.2 release comes out.",
     "body": "With the new 26.2 minecraft update coming with Vulkan Graphics baked in, nobody knows yet what will happen with all of our favorite preformance mods that rely on OpenGL, but I will still continue to work on this pack as there are preformance increases to be made even with this new vulkan renderer minecraft has put in place. As vulkanmod on 26.1.2 gets more FPS than vulkan on 26.2, so there are preformance mods to be made for this, but nobody knows yet, ill try my best to keep this pack going though. Thanks for using OptiArk!"
-  }
+  },
   {
     "id": "chaos-cubed",
     "date": "2026-06-18",
