@@ -6,7 +6,7 @@
       "versions": [
         {
           "label": "26.2",
-          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/sodium-updfabric/OptiArk-sodium-26.2-MC26.2.mrpack",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/sodium-vk-fix/OptiArk-sodium-26.2-MC26.2.mrpack",
           "supported": true,
           "note": null,
           "beta": true,
