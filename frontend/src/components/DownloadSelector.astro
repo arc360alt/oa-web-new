@@ -29,14 +29,17 @@ const { categories, versionBackgrounds } = Astro.props;
         <div class="version-grid">
           {cat.versions.map((v) => (
             <button
-              class:list={["version-btn", { unsupported: !v.supported, unavailable: v.url === "" }]}
+              class:list={["version-btn", { unsupported: !v.supported, unavailable: v.url === "", beta: v.beta }]}
               data-url={v.url}
               data-note={v.note || ""}
               data-label={v.label}
               data-bg={versionBackgrounds[v.label] || versionBackgrounds[v.label.replace(/\s.+/, "").trim()] || ""}
+              data-beta={v.beta ? "true" : ""}
+              data-unsupported-mods={v.unsupportedMods ? JSON.stringify(v.unsupportedMods) : ""}
               onclick="selectVersion(this)"
             >
               <span class="v-label">{v.label}</span>
+              {v.beta && <span class="v-badge beta-badge">Beta</span>}
               {!v.supported && <span class="v-badge">Unsupported</span>}
               {v.url === "" && <span class="v-badge unavail">Soon</span>}
             </button>
@@ -60,6 +63,25 @@ const { categories, versionBackgrounds } = Astro.props;
   </div>
 </section>
 
+<!-- Beta warning modal -->
+<div class="modal-overlay" id="betaModal">
+  <div class="modal modal-beta">
+    <div class="modal-icon">🧪</div>
+    <h3 class="modal-title beta-title">Beta Version</h3>
+    <p class="modal-body">
+      This version is a <strong>work in progress</strong>. It may be unstable, incomplete, or contain bugs.
+    </p>
+    <div class="beta-mods-section" id="betaModsSection" style="display:none">
+      <p class="beta-mods-label">Mods not yet supported in this beta:</p>
+      <ul class="beta-mods-list" id="betaModsList"></ul>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="betaModalCancel">Go Back</button>
+      <a class="modal-confirm beta-confirm" id="betaDlBtn" href="#" target="_blank">Download Anyway</a>
+    </div>
+  </div>
+</div>
+
 <!-- Legacy warning modal -->
 <div class="modal-overlay" id="legacyModal">
   <div class="modal">
@@ -71,8 +93,8 @@ const { categories, versionBackgrounds } = Astro.props;
       Download and use it at your own risk.
     </p>
     <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeLegacyModal()">Go Back</button>
-      <a class="modal-confirm" id="modalDlBtn" href="#" target="_blank" onclick="closeLegacyModal()">Download Anyway</a>
+      <button class="modal-cancel" id="legacyModalCancel">Go Back</button>
+      <a class="modal-confirm" id="modalDlBtn" href="#" target="_blank">Download Anyway</a>
     </div>
   </div>
 </div>
@@ -143,6 +165,9 @@ const { categories, versionBackgrounds } = Astro.props;
   border: 1px solid var(--border);
 }
 .v-badge.unavail { color: var(--warn); border-color: var(--warn); }
+.v-badge.beta-badge { color: #a78bfa; border-color: #a78bfa; }
+.version-btn.beta:hover:not(.unavailable) { border-color: #a78bfa; color: #a78bfa; }
+.version-btn.beta.selected { border-color: #a78bfa; background: rgba(167,139,250,0.1); color: #a78bfa; }
 
 /* Download card */
 .dl-card {
@@ -259,6 +284,31 @@ const { categories, versionBackgrounds } = Astro.props;
   transition: opacity 0.2s;
 }
 .modal-confirm:hover { opacity: 0.85; text-decoration: none; }
+
+/* Beta modal */
+.modal-beta { border-color: #a78bfa; box-shadow: 0 0 40px rgba(167,139,250,0.15); }
+.beta-title { color: #a78bfa; }
+.beta-mods-section { margin-bottom: 20px; text-align: left; }
+.beta-mods-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 8px; }
+.beta-mods-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.beta-mods-list li {
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  background: rgba(167,139,250,0.08);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: 4px;
+  color: #c4b5fd;
+}
+.beta-confirm { background: #a78bfa; }
 </style>
 
 <script>
@@ -285,23 +335,38 @@ const { categories, versionBackgrounds } = Astro.props;
     const label = btn.dataset.label;
     const bg = btn.dataset.bg;
     const isLegacy = btn.classList.contains('unsupported');
+    const isBeta = btn.dataset.beta === 'true';
+    const unsupportedMods = btn.dataset.unsupportedMods ? JSON.parse(btn.dataset.unsupportedMods) : [];
 
-    const card = document.getElementById('dlCard');
-    const dlBtn = document.getElementById('dlBtn');
+    const card = /** @type {HTMLElement} */ (document.getElementById('dlCard'));
+    const dlBtn = /** @type {HTMLAnchorElement} */ (document.getElementById('dlBtn'));
+    if (!card || !dlBtn) return;
     document.getElementById('dlVersion').textContent = `${currentTech} — ${label}`;
     document.getElementById('dlNote').textContent = note || '';
     document.getElementById('dlBg').style.backgroundImage = bg ? `url(${bg})` : 'none';
 
-    // Tint the download card yellow for legacy
-    card.style.borderColor = isLegacy ? 'rgba(245,166,35,0.5)' : '';
+    // Tint card based on version type
+    if (isBeta) {
+      card.style.borderColor = 'rgba(167,139,250,0.5)';
+    } else if (isLegacy) {
+      card.style.borderColor = 'rgba(245,166,35,0.5)';
+    } else {
+      card.style.borderColor = '';
+    }
 
     if (url) {
       dlBtn.href = url;
       dlBtn.classList.remove('disabled');
-      if (isLegacy) {
+      if (isBeta) {
+        dlBtn.textContent = 'Download (Beta) ↓';
+        dlBtn.style.background = '#a78bfa';
+        dlBtn.onclick = function(e) {
+          e.preventDefault();
+          openBetaModal(url, unsupportedMods);
+        };
+      } else if (isLegacy) {
         dlBtn.textContent = 'Download (Unsupported) ↓';
         dlBtn.style.background = 'var(--warn)';
-        // Intercept click to show warning first
         dlBtn.onclick = function(e) {
           e.preventDefault();
           openLegacyModal(url);
@@ -323,17 +388,43 @@ const { categories, versionBackgrounds } = Astro.props;
     document.getElementById('dlHint').style.display = 'none';
   };
 
-  window.openLegacyModal = function(url) {
-    document.getElementById('modalDlBtn').href = url;
-    document.getElementById('legacyModal').classList.add('open');
-  };
+  function openBetaModal(url: string, unsupportedMods: string[]) {
+    const dlBtn = document.getElementById('betaDlBtn') as HTMLAnchorElement | null;
+    if (dlBtn) dlBtn.href = url;
+    const modsSection = document.getElementById('betaModsSection') as HTMLElement | null;
+    const modsList = document.getElementById('betaModsList') as HTMLElement | null;
+    if (unsupportedMods && unsupportedMods.length > 0) {
+      if (modsList) modsList.innerHTML = unsupportedMods.map((m: string) => `<li>${m}</li>`).join('');
+      if (modsSection) modsSection.style.display = 'block';
+    } else {
+      if (modsSection) modsSection.style.display = 'none';
+    }
+    document.getElementById('betaModal')?.classList.add('open');
+  }
 
-  window.closeLegacyModal = function() {
-    document.getElementById('legacyModal').classList.remove('open');
-  };
+  function closeBetaModal() {
+    document.getElementById('betaModal')?.classList.remove('open');
+  }
 
-  // Close modal on overlay click
-  document.getElementById('legacyModal').addEventListener('click', function(e) {
+  document.getElementById('betaModalCancel')?.addEventListener('click', closeBetaModal);
+  document.getElementById('betaDlBtn')?.addEventListener('click', closeBetaModal);
+  document.getElementById('betaModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeBetaModal();
+  });
+
+  function openLegacyModal(url: string) {
+    const dlBtn = document.getElementById('modalDlBtn') as HTMLAnchorElement | null;
+    if (dlBtn) dlBtn.href = url;
+    document.getElementById('legacyModal')?.classList.add('open');
+  }
+
+  function closeLegacyModal() {
+    document.getElementById('legacyModal')?.classList.remove('open');
+  }
+
+  document.getElementById('legacyModalCancel')?.addEventListener('click', closeLegacyModal);
+  document.getElementById('modalDlBtn')?.addEventListener('click', closeLegacyModal);
+  document.getElementById('legacyModal')?.addEventListener('click', function(e) {
     if (e.target === this) closeLegacyModal();
   });
 

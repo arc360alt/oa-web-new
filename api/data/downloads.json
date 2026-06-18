@@ -5,6 +5,14 @@
       "description": "The standard high-performance renderer. Best for most players.",
       "versions": [
         {
+          "label": "26.2",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/sodium-26.2/OptiArk-sodium-26.2-MC26.2.mrpack",
+          "supported": true,
+          "note": null,
+          "beta": true,
+          "unsupportedMods": ["Chunky", "Collective", "Ferrite Core", "Krypton", "Ore Harvester", "Tree Harvester", "Placeholder API"]
+        },
+        {
           "label": "26.1.2",
           "url": "https://github.com/arc360alt/OptiArk-New/releases/download/v1.5.1-ksyxis/OptiArk-sodium-26.1.2.mrpack",
           "supported": true,
@@ -272,6 +280,7 @@
     }
   },
   "versionBackgrounds": {
+    "26.2": "https://www.minecraft.net/content/dam/minecraftnet/article-asset/2026/minecraft-26-2/new-article-hero-image.jpg",
     "26.1.2": "https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/screenshots/26.1.2-1170x500.jpg",
     "26.1.1": "https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/screenshots/26-1-1_1170x500.jpg",
     "26.1": "https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/screenshots/26.1_1170x500.jpg",
@@ -291,8 +300,8 @@
     "1.8.9": "https://minecraft.wiki/images/thumb/Java_Edition_1.8.9.png/800px-Java_Edition_1.8.9.png?3d88b"
   },
   "banner": {
-    "message": "What will happen to OptiArk after 26.2?",
-    "link": "/news/newver-upd",
+    "message": "26.2 Support is out! (Sodium only)",
+    "link": "/news/chaos-cubed",
     "active": true
   }
 }
