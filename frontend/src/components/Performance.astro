@@ -13,13 +13,17 @@
     <div class="perf-rig">
       <span class="rig-label">Test Rig</span>
       <div class="rig-specs">
-        <span>AMD Ryzen 5 7535U</span>
+        <span>AMD Ryzen 7 5700G</span>
         <span class="rig-sep">·</span>
-        <span>Radeon 680M</span>
+        <span>RX 7600 8GB OC</span>
         <span class="rig-sep">·</span>
-        <span>16GB DDR5 4800MT</span>
+        <span>32GB DDR4 3200MT</span>
         <span class="rig-sep">·</span>
-        <span>Render distance 8 chunks · 1200p</span>
+        <span>Render distance 8 chunks</span>
+        <span class="rig-sep">·</span>
+        <span>1440P</span>
+        <span class="rig-sep">·</span>
+        <span>Arch Linux, Hyprland</span>
       </div>
     </div>
 
@@ -29,11 +33,11 @@
         <p class="chart-sub">Higher is better</p>
         <div class="bar-chart" id="fpsChart"></div>
       </div>
-      <div class="chart-card">
+      <!-- <div class="chart-card">
         <h3 class="chart-title">Chunk Load Time — Teleport to new area</h3>
-        <p class="chart-sub">Lower is better</p>
+        <p class="chart-sub">Lower is better (Outdated info, inaccurate)</p>
         <div class="bar-chart" id="chunkChart"></div>
-      </div>
+      </div> -->
     </div>
 
     <p class="perf-disclaimer">
@@ -211,19 +215,20 @@
   };
 
   const FPS_DATA = [
-    { label: "Nividium",        key: "nividium",   value: 1000 },
-    { label: "VulkanMod",       key: "vulkan",     value: 620  },
-    { label: "Sodium",          key: "sodium",     value: 374  },
-    { label: "Competitor Pack", key: "competitor", value: 241  },
-    { label: "Vanilla",         key: "vanilla",    value: 118  },
+    { label: "Nividium 26.1.2 (4090M)",        key: "nividium",   value: 1200 },
+    { label: "VulkanMod 26.1.2",       key: "vulkan",     value: 1800  },
+    { label: "Sodium 26.2 (OpenGL)",          key: "sodium",     value: 390  },
+    { label: "Sodium 26.2 (Vulkan)",          key: "sodium",     value: 2100  },
+    { label: "Competitor Pack 26.1.2", key: "competitor", value: 241  },
+    { label: "Vanilla 26.2",         key: "vanilla",    value: 118  },
   ];
 
   const CHUNK_DATA = [
-    { label: "VulkanMod",       key: "vulkan",     value: 200 },
-    { label: "Nividium",        key: "nividium",   value: 245 },
-    { label: "Sodium",          key: "sodium",     value: 290 },
-    { label: "Vanilla",         key: "vanilla",    value: 480 },
-    { label: "Competitor Pack", key: "competitor", value: 320 },
+    { label: "VulkanMod 26.1.2",       key: "vulkan",     value: 300 },
+    { label: "Nividium 26.1.2 (4090M)",        key: "nividium",   value: 360 },
+    { label: "Sodium 26.2 (OpenGL)",          key: "sodium",     value: 220 },
+    { label: "Vanilla 26.2",         key: "vanilla",    value: 480 },
+    { label: "Competitor Pack 26.1.2", key: "competitor", value: 390 },
   ];
 
   function buildChart(containerId, data, unit) {
@@ -243,8 +248,8 @@
         <span class="bar-row-label">${d.label}</span>
         <div class="bar-track">
           <div class="bar-track-inner">
-            <div class="bar-fill" data-pct="${pct}" style="background: ${col.fill}; --bar-glow: ${col.glow}; border-radius: 4px;"">
-              <span style="margin-left: 4px;" class="bar-value">${d.value}${unit}</span>
+            <div class="bar-fill" data-pct="${pct}" style="background: ${col.fill}; --bar-glow: ${col.glow}; border-radius: 4px;">
+              <span style="margin-left: 4px; white-space: nowrap;" class="bar-value">${d.value}${unit}</span>
             </div>
           </div>
           <div class="bar-glow" data-pct="${pct}" style="box-shadow: 0 0 18px 4px ${col.glow};"></div>
