@@ -6,11 +6,11 @@
       "versions": [
         {
           "label": "26.2",
-          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/sodium-moremodswork/OptiArk-sodium-26.2-MC26.2.mrpack",
+          "url": "https://github.com/arc360alt/OptiArk-New/releases/download/sodium-modupdate-262/OptiArk-sodium-26.2-MC26.2.mrpack",
           "supported": true,
           "note": null,
           "beta": true,
-          "unsupportedMods": ["Chunky", "Ferrite Core", "Krypton"]
+          "unsupportedMods": ["Krypton", "Iris due to incompatibility with Sodium Beta 4"]
         },
         {
           "label": "26.1.2",
